@@ -18,3 +18,7 @@ cake
 biriyani2
 120
 2
+6
+kola
+12
+23
