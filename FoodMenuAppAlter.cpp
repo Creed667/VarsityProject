@@ -202,32 +202,29 @@ void UpdateExistingMenu()
 void selectFoodForOrder()
 {
   cout << NL << "\tEnter Food Code : ";
-  int c, n;
-  cin >> c;
-  c--;
-  for (int j = 0; j < i; j++)
-  {
-    if (j == c)
+  int foodcode, amount;
+  cin >> foodcode;
+    int index = binarySearchByFoodCode(foodcode);
+    if (index != -1)
     {
       cout << NL << "\tEnter Food Amount : ";
-      cin >> n;
-      if (n > menu[j].count)
+      cin >> amount;
+      if (amount > menu[index].count)
       {
-        cout << NL << "Sorry You selected more than maximum food in stock" << NL;
-        break;
+        cout << NL << "\tSorry You selected more than maximum food in stock" << NL;
       }
       else
       {
-        cout << NL << "\t\tSelected Food Code : " << menu[j].foodcode;
-        cout << NL << "\t\tSelected Food name : " << menu[j].foodname;
-        cout << NL << "\t\tFood Amount : " << n;
-        menu[i - 1].count = menu[j].count - n;
-        int b = menu[j].price * n;
-        cout << NL << "\t\tYour Bill is : " << b << "TAKA" << NL << NL;
-        break;
+        cout << NL << "\tSelected Food Code : " << menu[index].foodcode;
+        cout << NL << "\tSelected Food name : " << menu[index].foodname;
+        cout << NL << "\tFood Amount : " << amount;
+        menu[i - 1].count = menu[index].count - amount;
+        int b = menu[index].price * amount;
+        cout << NL << "\tYour Bill is : " << b << "TAKA" << NL << NL;
       }
     }
-  }
+    else cout<<"\tInvalid Food code"<<NL;
+  
 }
 
 //owner sections and options
@@ -298,11 +295,11 @@ int CustomerAccess()
     if (select2 == 1)
     {
       showMenu();
-      cout << "\tEnter 1 to order and  2 to return to main menu\n";
+      cout << "\tEnter 1 to order and  2 to return to Customer menu\n";
       cout << "\tEnter your option: ";
       cin >> option;
       if (option == 2)
-        return 0;
+       continue;
       else
       {
         selectFoodForOrder();
