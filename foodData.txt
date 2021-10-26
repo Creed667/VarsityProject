@@ -1,7 +1,7 @@
 1
 shingara
 10
-3
+0
 2
 glue
 12
@@ -9,7 +9,7 @@ glue
 3
 pitha
 4
-5
+4
 4
 cake
 5
@@ -21,4 +21,4 @@ biriyani2
 6
 kola
 12
-3
+2

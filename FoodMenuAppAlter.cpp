@@ -65,16 +65,13 @@ void saveMenuInDatabase()
 int binarySearchByFoodCode(int x)
 {
   sort(foodcodesData.begin(), foodcodesData.end());
-  // for (auto i : foodcodesData) //debug
-  //   cout << i.first;
-  //  cout<<NL;
+
   int left = 0, right = foodcodesData.size() - 1, mid = 0;
 
   while (left <= right)
   {
     mid = (left + right) / 2;
-    //cout<<NL<<"l: "<<left<<" r: "<<right<<" m: "<<mid<<NL;  //debug
-    // cout<<"code: "<<foodcodesData[mid].first<<NL;
+
     if (foodcodesData[mid].first == x)
     {
       return foodcodesData[mid].second;
@@ -118,7 +115,7 @@ void addNewFoodItem()
   cin >> n;
   while (n--)
   {
-    //Data will be added in menu array but not in database
+    //Data will be added in menu array but not in database before closing the program
     cout << "\tEnter Food Name : ";
     fflush(stdin);
     gets(menu[i].foodname);
@@ -210,20 +207,37 @@ void selectFoodForOrder()
     cin >> amount;
     if (amount > menu[index].count)
     {
-      cout << NL << "\tSorry You selected more than maximum food in stock" << NL;
+      cout << NL << "\tSorry You selected more than maximum food in the stock" << NL;
     }
     else
     {
       cout << NL << "\tSelected Food Code : " << menu[index].foodcode;
       cout << NL << "\tSelected Food name : " << menu[index].foodname;
+      cout << NL << "\tSelected Food price : " << menu[index].price;
       cout << NL << "\tFood Amount : " << amount;
-      menu[i - 1].count = menu[index].count - amount;
+      menu[index].count -= amount;
       int sum = menu[index].price * amount;
-      cout << NL << "\tYour Bill is : " << sum << " TAKA" << NL << NL;
+      customer_total_cost += sum;
+      cout << NL << "\tYou have ordered " << sum << " Taka food in this session";
+      cout << NL << "\tYour total bill is : " << customer_total_cost << " Taka" << NL << NL;
+
+      cout<<NL<<"\tpress 1 to order again, any other number to return to cutomer menu"<<NL;
+      int option;
+      cin>>option;
+      if(option==1) selectFoodForOrder();
+      else return;
     }
   }
   else
     cout << "\tInvalid Food code" << NL;
+}
+
+void clearScreen()
+{
+  cout << "\tpress enter to continue...";
+  getchar();
+  getchar();
+  system("cls");
 }
 
 //owner sections and options
@@ -245,26 +259,17 @@ int OwnerAccess()
     if (select2 == 1)
     {
       showMenu();
-      cout << "\tpress enter to continue...";
-      getchar();
-      getchar();
-      system("cls");
+      clearScreen();
     }
     else if (select2 == 2)
     {
       addNewFoodItem();
-      cout << "\tpress enter to continue...";
-      getchar();
-      getchar();
-      system("cls");
+      clearScreen();
     }
     else if (select2 == 3)
     {
       UpdateExistingMenu();
-      cout << "\tpress enter to continue...";
-      getchar();
-      getchar();
-      system("cls");
+      clearScreen();
     }
     else if (select2 == 4)
     {
@@ -287,7 +292,8 @@ int CustomerAccess()
     cout << "\t1)View Menu item and order\n";
     cout << "\t2)Go back to main menu\n";
     cout << "\t3)Exit the app\n";
-    cout << "\tGive your option: ";
+    cout << "\n\tYour total bill untill now: " << customer_total_cost <<" Taka." <<NL;
+    cout << "\n\tGive your option: ";
     cin >> select2;
     if (select2 == 1)
     {
@@ -300,10 +306,7 @@ int CustomerAccess()
       else
       {
         selectFoodForOrder();
-        cout << "\tpress enter to continue...";
-        getchar();
-        getchar();
-        system("cls");
+        clearScreen();
       }
     }
     else if (select2 == 2)
