@@ -221,11 +221,13 @@ void selectFoodForOrder()
       cout << NL << "\tYou have ordered " << sum << " Taka food in this session";
       cout << NL << "\tYour total bill is : " << customer_total_cost << " Taka" << NL << NL;
 
-      cout<<NL<<"\tpress 1 to order again, any other number to return to cutomer menu"<<NL;
+      cout << NL << "\tpress 1 to order again, any other number to return to cutomer menu: ";
       int option;
-      cin>>option;
-      if(option==1) selectFoodForOrder();
-      else return;
+      cin >> option;
+      if (option == 1)
+        selectFoodForOrder();
+      else
+        return;
     }
   }
   else
@@ -292,7 +294,7 @@ int CustomerAccess()
     cout << "\t1)View Menu item and order\n";
     cout << "\t2)Go back to main menu\n";
     cout << "\t3)Exit the app\n";
-    cout << "\n\tYour total bill untill now: " << customer_total_cost <<" Taka." <<NL;
+    cout << "\n\tYour total bill untill now: " << customer_total_cost << " Taka." << NL;
     cout << "\n\tGive your option: ";
     cin >> select2;
     if (select2 == 1)
