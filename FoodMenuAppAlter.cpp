@@ -144,8 +144,8 @@ void UpdateExistingMenu()
   int index = binarySearchByFoodCode(foodcode);
   if (index != -1)
   {
-    cout << NL << "\tSelected food code     : " << menu[index].foodcode;
-    cout << NL << "\tSelected food name     : " << menu[index].foodname;
+    cout << NL << "\tSelected food code      : " << menu[index].foodcode;
+    cout << NL << "\tSelected food name      : " << menu[index].foodname;
     cout << NL << "\tSelected food price     : " << menu[index].price;
     cout << NL << "\tSelected food quantity in stock : " << menu[index].count << NL << NL;
     cout << "\t1)Edit food name" << NL;
@@ -322,6 +322,7 @@ int CustomerAccess()
 
 int main()
 {
+  
   //saving data from database
   readDataFromDatabase();
 
