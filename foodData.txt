@@ -1,7 +1,7 @@
 1
-shingara
+shingara extraa
 10
-0
+12
 2
 glue
 12
@@ -22,3 +22,11 @@ biriyani2
 kola
 12
 2
+7
+bitlovon
+12
+12
+8
+shushi
+12
+1

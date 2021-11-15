@@ -6,10 +6,11 @@
 using namespace std;
 
 int ObjIndex = 0;
-int OwnerObjCount = 0;
+int OwnerObjIndex = 0;
 char path[] = "foodData.txt";
 int customer_total_cost = 0;
-
+map<string, int> CheckUserExistence;
+vector<pair<string ,int>> OwnerUsernames;
 struct cloneMenuData
 {
   int foodcode;
@@ -18,9 +19,9 @@ struct cloneMenuData
   int stockCount;
 };
 
-class Menu
+class FoodMenu
 {
-private:
+protected:
   int foodcode;
   string foodname;
   int price;
@@ -43,41 +44,51 @@ public:
     temp.stockCount = this->stockCount;
     return temp;
   }
-
-  void AddOrChangeData(cloneMenuData temp)
-  {
-    this->foodname = temp.foodname;
-    this->price = temp.price;
-    this->stockCount = temp.stockCount;
-    this->foodcode = temp.foodcode;
-  }
+  // void AddOrChangeData(cloneMenuData temp)
+  // {
+  //   this->foodname = temp.foodname;
+  //   this->price = temp.price;
+  //   this->stockCount = temp.stockCount;
+  //   this->foodcode = temp.foodcode;
+  // }
 
   void showMenu(int j)
   {
-    cout << NL << "\t|-------------------------------" << NL;
-    cout << "\t| Serial: " << j + 1 << NL;
-    cout << "\t| Item code: " << foodcode << NL;
-    cout << "\t| Item: " << foodname << NL;
-    cout << "\t| Price: " << price << NL;
-    cout << "\t| Available in stock: " << stockCount << NL;
-    cout << "\t|-------------------------------" << NL;
+    cout << NL << "\t|```````````````````````````" << NL;
+    //cout << "\t| Serial: " << j + 1 << NL;
+    cout << "\t| Item code : " << foodcode << NL;
+    cout << "\t| Item : " << foodname << NL;
+    cout << "\t| Price : " << price << NL;
+    cout << "\t| Available in stock : " << stockCount << NL;
+    cout << "\t'```````````````````````````" << NL;
   }
 };
 
-class Owner
-{
+struct cloneOwnerData{
+  string username,MobileNum,Password;
+  int isOwner =0;
 };
 
-class Menu MainMenuArray[1000]; //main array holding all the food info
+class Owner : protected FoodMenu
+{
+protected:
+  string userName, MobileNum, Password;
+  int isOwner = 0;
+public:
+    void AssignOwnerInfo(cloneOwnerData temp){
+    
+    }
+};
+
+class FoodMenu MainMenuArray[1000]; //main array holding all the food info
 
 vector<pair<int, int>> foodcodesData; //only foodcodes for searching in binary later
 
 void readDataFromDatabase()
 {
-  ifstream file("foodData.txt");
+  ifstream file(path);
   if (file.fail())
   {
-    cout << "LOL" << NL;
     ObjIndex = 0;
     return;
   }
@@ -88,31 +99,32 @@ void readDataFromDatabase()
     {
       file.ignore();
       getline(file, tempObject.foodname);
-      // cout << tempObject.foodname << NL;
       file >> tempObject.price;
       file >> tempObject.stockCount;
       MainMenuArray[ObjIndex].AssignValue(tempObject);
       ObjIndex++;
     }
   }
+  file.close();
   return;
 }
 
-// void saveMenuInDatabase()
-// {
-//   FILE *file;
-//   file = fopen("foodData.txt", "w");
-//   for (int j = 0; j < i; j++)
-//   {
-//     fprintf(file, "%d\n", menu[j].foodcode);
-//     fprintf(file, "%s\n", menu[j].foodname);
-//     fprintf(file, "%d\n", menu[j].price);
-//     fprintf(file, "%d\n", menu[j].count);
-//     //i++;
-//   }
-//   fclose(file);
-//   return;
-// }
+void saveMenuInDatabase()
+{
+  ofstream file(path);
+  cloneMenuData tempObject;
+  for (int j = 0; j < ObjIndex; j++)
+  {
+    tempObject = MainMenuArray[j].returnValue(tempObject);
+    file << tempObject.foodcode << NL;
+    file << tempObject.foodname << NL;
+    file << tempObject.price << NL;
+    file << tempObject.stockCount << NL;
+  }
+  file.close();
+
+  return;
+}
 
 int binarySearchByFoodCode(int x)
 {
@@ -136,7 +148,7 @@ int binarySearchByFoodCode(int x)
   return -1;
 }
 
-// to show the full menu list saved in menu array
+//to show the full menu list saved in menu array
 void showMainMenu()
 {
   if (ObjIndex == 0)
@@ -153,30 +165,30 @@ void showMainMenu()
   }
 }
 
-// for adding new item to menu, only accessible by the owner
+//for adding new item to menu, only accessible by the owner
 void addNewFoodItem()
 {
   int n;
   cout << NL << "\tEnter number of new food items: ";
   cin >> n;
-  cloneMenuData tempObj;
+  cloneMenuData tempObject;
   while (n--)
   {
     //Data will be added in menu array but not in database before closing the program
     cout << NL << "\tEnter Food Name : ";
     cin.ignore();
-    getline(cin, tempObj.foodname);
+    getline(cin, tempObject.foodname);
 
     cout << NL << "\tEnter Food Price : ";
 
-    cin >> tempObj.price;
+    cin >> tempObject.price;
     cout << NL << "\tEnter How many Food in stock : ";
     fflush(stdin);
-    cin >> tempObj.stockCount;
+    cin >> tempObject.stockCount;
 
-    tempObj.foodcode = ObjIndex + 1;
-    //foodcodesData.push_back({tempObj.foodcode, ObjIndex});
-    MainMenuArray[ObjIndex].AddOrChangeData(tempObj);
+    tempObject.foodcode = ObjIndex + 1;
+    //foodcodesData.push_back({tempObject.foodcode, ObjIndex});
+    MainMenuArray[ObjIndex].AssignValue(tempObject);
     ObjIndex++;
     cout << NL << "\tSuccessfully added in the menu";
     cout << NL;
@@ -187,63 +199,74 @@ void addNewFoodItem()
 //updating a single food data, only accssible by the owner
 void UpdateExistingMenu()
 {
-  // cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
-  // int foodcode, option;
-  // cin >> foodcode;
+  cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
+  int foodcode, option;
+  cin >> foodcode;
 
-  // int index = binarySearchByFoodCode(foodcode);
-  // if (index != -1)
-  // {
-  //   cout << NL << "\tSelected food code      : " << menu[index].foodcode;
-  //   cout << NL << "\tSelected food name      : " << menu[index].foodname;
-  //   cout << NL << "\tSelected food price     : " << menu[index].price;
-  //   cout << NL << "\tSelected food quantity in stock : " << menu[index].count << NL << NL;
-  //   cout << "\t1)Edit food name" << NL;
-  //   cout << "\t2)Edit Quantity of the food" << NL;
-  //   cout << "\t3)Edit price of the food" << NL;
-  //   cout << "\t4)Edit the all the info of this food" << NL;
-  //   cout << "\t5) cancel operation" << NL;
-  //   cout << "\tselect your option: ";
-  //   cin >> option;
-  //   if (option == 1)
-  //   {
-  //     cout << NL << "\tEnter new food name: ";
-  //     getchar();
-  //     gets(menu[index].foodname);
-  //   }
+  int index = (foodcode - 1);
+  if (index < ObjIndex)
+  {
+    cloneMenuData tempObject;
+    tempObject = MainMenuArray[index].returnValue(tempObject);
+    cout << NL << "\tSelected food code      : " << tempObject.foodcode;
+    cout << NL << "\tSelected food name      : " << tempObject.foodname;
+    cout << NL << "\tSelected food price     : " << tempObject.price;
+    cout << NL << "\tSelected food quantity in stock : " << tempObject.stockCount << NL << NL;
+    cout << "\t1)Edit food name" << NL;
+    cout << "\t2)Edit Quantity of the food" << NL;
+    cout << "\t3)Edit price of the food" << NL;
+    cout << "\t4)Edit the all the info of this food" << NL;
+    cout << "\t5) cancel operation" << NL;
+    cout << "\tselect your option: ";
+    cin >> option;
+    //option for changing name only
+    if (option == 1)
+    {
+      cout << NL << "\tEnter new food name: ";
+      cin.ignore();
+      getline(cin, tempObject.foodname);
+      MainMenuArray[index].AssignValue(tempObject);
+    }
 
-  //   else if (option == 2)
-  //   {
-  //     cout << NL << "\tEnter new food quantity in stock : ";
-  //     cin >> name;
+    //option for changing quantity in stock
+    else if (option == 2)
+    {
+      cout << NL << "\tEnter new food quantity in stock : ";
+      cin >> tempObject.stockCount;
+      MainMenuArray[index].AssignValue(tempObject);
+    }
 
-  //     cin >> menu[index].count;
-  //   }
+    //option for changing food price
+    else if (option == 3)
+    {
+      cout << NL << "\tEnter new price for this food : ";
+      cin >> tempObject.price;
+      MainMenuArray[index].AssignValue(tempObject);
+    }
 
-  //   else if (option == 3)
-  //   {
-  //     cout << NL << "\tEnter new price for this food : ";
-  //     cin >> menu[index].price;
-  //   }
-  //   else if (option == 4)
-  //   {
-  //     cout << NL << "\tEnter new food name: ";
-  //     getchar();
-  //     gets(menu[index].foodname);
-  //     cout << NL << "\tEnter new food quantity in stock : ";
-  //     cin >> menu[index].count;
-  //     cout << NL << "\tEnter new price for this food : ";
-  //     cin >> menu[index].price;
-  //   }
-  //   else if (option == 5)
-  //     return;
-  // }
-  // else
-  // {
-  //   cout << "\tNo such food code matched in the menu" << NL;
-  //   return;
-  // }
-  // cout << NL << NL << "\tSuccessfully Updated" << NL;
+    //option for change entire food info
+    else if (option == 4)
+    {
+      cout << NL << "\tEnter new food name: ";
+      cin.ignore();
+      getline(cin, tempObject.foodname);
+      cout << NL << "\tEnter new food quantity in stock : ";
+      cin >> tempObject.stockCount;
+      cout << NL << "\tEnter new price for this food : ";
+      cin >> tempObject.price;
+      MainMenuArray[index].AssignValue(tempObject);
+    }
+    else if (option == 5)
+      return;
+  }
+
+  // if food code doesn't exist
+  else
+  {
+    cout << "\tNo such food code matched in the menu" << NL;
+    return;
+  }
+  cout << NL << NL << "\tSuccessfully Updated" << NL;
 }
 
 //ordering food from the menu stock, accssible by the customer
@@ -407,6 +430,8 @@ int main()
     else
       break;
   }
-  //saveMenuInDatabase();
+
+  //saving all the array data to file before closing
+  saveMenuInDatabase();
   return 0;
 }
