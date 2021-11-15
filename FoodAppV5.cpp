@@ -5,12 +5,15 @@
 
 using namespace std;
 
+
+
 int ObjIndex = 0;
 int OwnerObjIndex = 0;
 char path[] = "foodData.txt";
+char path2[] = "OwnerInfo.txt";
 int customer_total_cost = 0;
 map<string, int> CheckUserExistence;
-vector<pair<string ,int>> OwnerUsernames;
+vector<pair<string, int>> OwnerUsernames;
 struct cloneMenuData
 {
   int foodcode;
@@ -28,7 +31,7 @@ protected:
   int stockCount;
 
 public:
-  void AssignValue(cloneMenuData temp)
+  void setMenuInfo(cloneMenuData temp)
   {
     this->foodcode = temp.foodcode;
     this->foodname = temp.foodname;
@@ -36,7 +39,7 @@ public:
     this->stockCount = temp.stockCount;
   }
 
-  cloneMenuData returnValue(cloneMenuData temp)
+  cloneMenuData getMenuInfo(cloneMenuData temp)
   {
     temp.foodcode = this->foodcode;
     temp.foodname = this->foodname;
@@ -64,25 +67,40 @@ public:
   }
 };
 
-struct cloneOwnerData{
-  string username,MobileNum,Password;
-  int isOwner =0;
+struct cloneOwnerData
+{
+  string username, MobileNum, Password;
+  bool isOwner = false;
 };
 
 class Owner : protected FoodMenu
 {
 protected:
-  string userName, MobileNum, Password;
-  int isOwner = 0;
+  string username, MobileNum, Password;
+  bool isOwner = false;
+
 public:
-    void AssignOwnerInfo(cloneOwnerData temp){
-    
-    }
+
+  void RegisterNewUser(cloneOwnerData temp)
+  {
+    this->username = temp.username;
+    this->MobileNum = temp.MobileNum;
+    this->Password = temp.Password;
+    this->isOwner = temp.isOwner;
+  }
+
+  void getOwnerData(cloneOwnerData temp)
+  {
+    temp.username = this->username;
+    temp.MobileNum = this->MobileNum;
+    temp.Password = this->Password;
+    temp.isOwner = this->isOwner;
+  }
 };
 
 class FoodMenu MainMenuArray[1000]; //main array holding all the food info
-
-vector<pair<int, int>> foodcodesData; //only foodcodes for searching in binary later
+class Owner OwnerInfoArray[1000];
+//vector<pair<int, int>> foodcodesData; //only foodcodes for searching in binary later
 
 void readDataFromDatabase()
 {
@@ -101,7 +119,7 @@ void readDataFromDatabase()
       getline(file, tempObject.foodname);
       file >> tempObject.price;
       file >> tempObject.stockCount;
-      MainMenuArray[ObjIndex].AssignValue(tempObject);
+      MainMenuArray[ObjIndex].setMenuInfo(tempObject);
       ObjIndex++;
     }
   }
@@ -115,7 +133,7 @@ void saveMenuInDatabase()
   cloneMenuData tempObject;
   for (int j = 0; j < ObjIndex; j++)
   {
-    tempObject = MainMenuArray[j].returnValue(tempObject);
+    tempObject = MainMenuArray[j].getMenuInfo(tempObject);
     file << tempObject.foodcode << NL;
     file << tempObject.foodname << NL;
     file << tempObject.price << NL;
@@ -126,21 +144,21 @@ void saveMenuInDatabase()
   return;
 }
 
-int binarySearchByFoodCode(int x)
+int binarySearchByUsernames(string x)
 {
-  sort(foodcodesData.begin(), foodcodesData.end());
+  sort(OwnerUsernames.begin(), OwnerUsernames.end());
 
-  int left = 0, right = foodcodesData.size() - 1, mid = 0;
+  int left = 0, right = OwnerUsernames.size() - 1, mid = 0;
 
   while (left <= right)
   {
     mid = (left + right) / 2;
 
-    if (foodcodesData[mid].first == x)
+    if (OwnerUsernames[mid].first == x)
     {
-      return foodcodesData[mid].second;
+      return OwnerUsernames[mid].second;
     }
-    else if (foodcodesData[mid].first < x)
+    else if (OwnerUsernames[mid].first < x)
       left = mid + 1;
     else
       right = mid - 1;
@@ -188,7 +206,7 @@ void addNewFoodItem()
 
     tempObject.foodcode = ObjIndex + 1;
     //foodcodesData.push_back({tempObject.foodcode, ObjIndex});
-    MainMenuArray[ObjIndex].AssignValue(tempObject);
+    MainMenuArray[ObjIndex].setMenuInfo(tempObject);
     ObjIndex++;
     cout << NL << "\tSuccessfully added in the menu";
     cout << NL;
@@ -207,7 +225,7 @@ void UpdateExistingMenu()
   if (index < ObjIndex)
   {
     cloneMenuData tempObject;
-    tempObject = MainMenuArray[index].returnValue(tempObject);
+    tempObject = MainMenuArray[index].getMenuInfo(tempObject);
     cout << NL << "\tSelected food code      : " << tempObject.foodcode;
     cout << NL << "\tSelected food name      : " << tempObject.foodname;
     cout << NL << "\tSelected food price     : " << tempObject.price;
@@ -225,7 +243,7 @@ void UpdateExistingMenu()
       cout << NL << "\tEnter new food name: ";
       cin.ignore();
       getline(cin, tempObject.foodname);
-      MainMenuArray[index].AssignValue(tempObject);
+      MainMenuArray[index].setMenuInfo(tempObject);
     }
 
     //option for changing quantity in stock
@@ -233,7 +251,7 @@ void UpdateExistingMenu()
     {
       cout << NL << "\tEnter new food quantity in stock : ";
       cin >> tempObject.stockCount;
-      MainMenuArray[index].AssignValue(tempObject);
+      MainMenuArray[index].setMenuInfo(tempObject);
     }
 
     //option for changing food price
@@ -241,7 +259,7 @@ void UpdateExistingMenu()
     {
       cout << NL << "\tEnter new price for this food : ";
       cin >> tempObject.price;
-      MainMenuArray[index].AssignValue(tempObject);
+      MainMenuArray[index].setMenuInfo(tempObject);
     }
 
     //option for change entire food info
@@ -254,7 +272,7 @@ void UpdateExistingMenu()
       cin >> tempObject.stockCount;
       cout << NL << "\tEnter new price for this food : ";
       cin >> tempObject.price;
-      MainMenuArray[index].AssignValue(tempObject);
+      MainMenuArray[index].setMenuInfo(tempObject);
     }
     else if (option == 5)
       return;
@@ -263,13 +281,13 @@ void UpdateExistingMenu()
   // if food code doesn't exist
   else
   {
-    cout << "\tNo such food code matched in the menu" << NL;
+    cout << NL << "\tNo such food code of food item exist in the menu" << NL;
     return;
   }
   cout << NL << NL << "\tSuccessfully Updated" << NL;
 }
 
-//ordering food from the menu stock, accssible by the customer
+//ordering food from the menu stock, accessible by the customer
 void selectFoodForOrder()
 {
   // cout << NL << "\tEnter Food Code : ";
@@ -317,6 +335,9 @@ void clearScreen()
   system("cls");
 }
 
+int OwnerLogin()
+{
+}
 //owner sections and options
 int OwnerAccess()
 {
@@ -408,7 +429,7 @@ int main()
     system("cls");
     cout << "\tWelcome to Food menu app:\n";
     cout << "\tSelect the option below:\n";
-    cout << "\t1) Press 1 to access as a Owner\n";
+    cout << "\t1) Press 1 to log in as an Owner\n";
     cout << "\t2) Press 2 to Access as a Customer\n";
     cout << "\t3) Press 3 to exit the app\n";
     cout << "\tGive your option: ";
