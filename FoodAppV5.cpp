@@ -94,21 +94,8 @@ public:
     temp.mobileNum = this->mobileNum;
     temp.password = this->password;
     temp.isOwner = this->isOwner;
-    //return temp;
+    return temp;
   }
-
-  // bool verifyLogin(string username, string password)
-  // {
-  //   for (int i = 0; i < ownerIndex; i++)
-  //   {
-  //     if (username == this->username)
-  //     {
-  //       if (password == this->password)
-  //         return true;
-  //     }
-  //     return false;
-  //   }
-  // }
 
   void showPartnerList(int j)
   {
@@ -295,10 +282,10 @@ void UpdateExistingMenu()
     cout << NL << "\tSelected food name      : " << tempObject.foodname;
     cout << NL << "\tSelected food price     : " << tempObject.price;
     cout << NL << "\tSelected food quantity in stock : " << tempObject.stockCount << NL << NL;
-    cout << "\t1)Edit food name" << NL;
-    cout << "\t2)Edit Quantity of the food" << NL;
-    cout << "\t3)Edit price of the food" << NL;
-    cout << "\t4)Edit the all the info of this food" << NL;
+    cout << "\t1) Edit food name" << NL;
+    cout << "\t2) Edit Quantity of the food" << NL;
+    cout << "\t3) Edit price of the food" << NL;
+    cout << "\t4) Edit the all the info of this food" << NL;
     cout << "\t5) cancel operation" << NL;
     cout << "\tselect your option: ";
     cin >> option;
@@ -398,6 +385,49 @@ void clearScreen()
   getchar();
   getchar();
   system("cls");
+}
+
+//partner section and options
+int partnerAccess()
+{
+   //<\code>
+   int select;
+    int select2;
+  while (1)
+  {
+    system("cls");
+    cout << "\tWelcome Partner section\n";
+    cout << "\n\tpress following numbers\n";
+    cout << "\t1) View Menu item\n";
+    cout << "\t2) Add food to Menu\n";
+    cout << "\t3) Update Existing menu\n";
+    cout << "\t4) Go back to main menu\n";
+    cout << "\t5) Exit the app\n";
+    cout << "\tGive your option: ";
+    cin >> select2;
+    if (select2 == 1)
+    {
+      showMainMenu();
+      clearScreen();
+    }
+    else if (select2 == 2)
+    {
+      addNewFoodItem();
+      clearScreen();
+    }
+    else if (select2 == 3)
+    {
+      UpdateExistingMenu();
+      clearScreen();
+    }
+    else if (select2 == 4)
+    {
+      return 0;
+    }
+    else if (select2 == 5)
+      return 1;
+  }
+
 }
 
 //owner sections and options
@@ -596,12 +626,12 @@ int main()
   while (1)
   {
     system("cls");
-    cout << "\tWelcome to Food menu app:\n";
-    cout << "\n\tSelect the option below:\n";
-    cout << "\t1) Access into Administration\n";
-    cout << "\t2) Access as a Customer\n";
-    cout << "\t3) Exit the app\n";
-    cout << "\tGive your option: ";
+    cout << "\n=============== Welcome to Food Menu App ===============\n";
+    cout << "\n\t\tSelect the option below\n";
+    cout << "\t\t1) Access into Administration\n";
+    cout << "\t\t2) Access as a Customer\n";
+    cout << "\t\t3) Exit the app\n";
+    cout << "\t\tGive your option: ";
     cin >> select;
 
     //accessing as administration
