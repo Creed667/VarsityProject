@@ -22,7 +22,7 @@ public:
 
 class Menu menu[1000];
 
-void readDataFromDatabase()
+void readMenuDataFromFile()
 {
   FILE *file;
   file = fopen("foodData.txt", "r");
@@ -292,7 +292,7 @@ int CustomerAccess()
 int main()
 {
   //saving data from database
-  readDataFromDatabase();
+  readMenuDataFromFile();
   
   //startup first page of program from here..
   int select, ex = -1;

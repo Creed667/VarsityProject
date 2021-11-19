@@ -5,15 +5,15 @@
 
 using namespace std;
 
-
-
-int ObjIndex = 0;
-int OwnerObjIndex = 0;
+int menuIndex = 0;
+int ownerIndex = 0;
 char path[] = "foodData.txt";
 char path2[] = "OwnerInfo.txt";
 int customer_total_cost = 0;
-map<string, int> CheckUserExistence;
-vector<pair<string, int>> OwnerUsernames;
+map<string, pair<string, int>> verifyUser;
+bool ownerExist = false;
+int userProfileIndex;
+
 struct cloneMenuData
 {
   int foodcode;
@@ -31,7 +31,7 @@ protected:
   int stockCount;
 
 public:
-  void setMenuInfo(cloneMenuData temp)
+  void setMenuData(cloneMenuData temp)
   {
     this->foodcode = temp.foodcode;
     this->foodname = temp.foodname;
@@ -39,7 +39,7 @@ public:
     this->stockCount = temp.stockCount;
   }
 
-  cloneMenuData getMenuInfo(cloneMenuData temp)
+  cloneMenuData getMenuData(cloneMenuData temp)
   {
     temp.foodcode = this->foodcode;
     temp.foodname = this->foodname;
@@ -69,32 +69,54 @@ public:
 
 struct cloneOwnerData
 {
-  string username, MobileNum, Password;
+  string username, mobileNum, password;
   bool isOwner = false;
 };
 
-class Owner : protected FoodMenu
+class Owner : public FoodMenu
 {
-protected:
-  string username, MobileNum, Password;
+private:
+  string username, mobileNum, password;
   bool isOwner = false;
 
 public:
-
-  void RegisterNewUser(cloneOwnerData temp)
+  void setOwnerData(cloneOwnerData temp)
   {
     this->username = temp.username;
-    this->MobileNum = temp.MobileNum;
-    this->Password = temp.Password;
+    this->mobileNum = temp.mobileNum;
+    this->password = temp.password;
     this->isOwner = temp.isOwner;
   }
 
-  void getOwnerData(cloneOwnerData temp)
+  cloneOwnerData getOwnerData(cloneOwnerData temp)
   {
     temp.username = this->username;
-    temp.MobileNum = this->MobileNum;
-    temp.Password = this->Password;
+    temp.mobileNum = this->mobileNum;
+    temp.password = this->password;
     temp.isOwner = this->isOwner;
+    //return temp;
+  }
+
+  // bool verifyLogin(string username, string password)
+  // {
+  //   for (int i = 0; i < ownerIndex; i++)
+  //   {
+  //     if (username == this->username)
+  //     {
+  //       if (password == this->password)
+  //         return true;
+  //     }
+  //     return false;
+  //   }
+  // }
+
+  void showPartnerList(int j)
+  {
+
+    cout << NL << "\tPartner List " << NL;
+    cout << "\tSerial " << j + 1 << ": ";
+    cout << username << NL;
+    cout << mobileNum << NL;
   }
 };
 
@@ -102,12 +124,12 @@ class FoodMenu MainMenuArray[1000]; //main array holding all the food info
 class Owner OwnerInfoArray[1000];
 //vector<pair<int, int>> foodcodesData; //only foodcodes for searching in binary later
 
-void readDataFromDatabase()
+void readMenuDataFromFile()
 {
   ifstream file(path);
   if (file.fail())
   {
-    ObjIndex = 0;
+    menuIndex = 0;
     return;
   }
   else
@@ -119,64 +141,107 @@ void readDataFromDatabase()
       getline(file, tempObject.foodname);
       file >> tempObject.price;
       file >> tempObject.stockCount;
-      MainMenuArray[ObjIndex].setMenuInfo(tempObject);
-      ObjIndex++;
+      MainMenuArray[menuIndex].setMenuData(tempObject);
+      menuIndex++;
     }
   }
   file.close();
   return;
 }
 
-void saveMenuInDatabase()
+void readOwnerInfoFile()
+{
+
+  ifstream file(path2);
+  if (file.fail())
+  {
+    ownerIndex = 0;
+    return;
+  }
+  else
+  {
+    cloneOwnerData tempObject;
+    while (file >> tempObject.username)
+    {
+      file >> tempObject.password;
+      file >> tempObject.mobileNum;
+      file >> tempObject.isOwner;
+
+      if (tempObject.username != "")
+        verifyUser[tempObject.username] = {tempObject.password, ownerIndex};
+      if (tempObject.isOwner == true)
+        ownerExist = true;
+      ownerIndex++;
+    }
+  }
+  file.close();
+}
+
+void saveOwnerInfoInFile()
+{
+  ofstream file(path2);
+  cloneOwnerData tempObject;
+  for (int j = 0; j < ownerIndex; j++)
+  {
+    tempObject = OwnerInfoArray[j].getOwnerData(tempObject);
+    file << tempObject.username << NL;
+    file << tempObject.password << NL;
+    file << tempObject.mobileNum << NL;
+    file << tempObject.isOwner << NL;
+  }
+  file.close();
+  return;
+}
+
+void saveMenuInFile()
 {
   ofstream file(path);
   cloneMenuData tempObject;
-  for (int j = 0; j < ObjIndex; j++)
+  for (int j = 0; j < menuIndex; j++)
   {
-    tempObject = MainMenuArray[j].getMenuInfo(tempObject);
+    tempObject = MainMenuArray[j].getMenuData(tempObject);
     file << tempObject.foodcode << NL;
     file << tempObject.foodname << NL;
     file << tempObject.price << NL;
     file << tempObject.stockCount << NL;
   }
   file.close();
-
   return;
 }
 
-int binarySearchByUsernames(string x)
-{
-  sort(OwnerUsernames.begin(), OwnerUsernames.end());
+// int binarySearchByUsernames(string x)
+// {
+//   sort(OwnerUsernames.begin(), OwnerUsernames.end());
 
-  int left = 0, right = OwnerUsernames.size() - 1, mid = 0;
+//   int left = 0, right = OwnerUsernames.size() - 1, mid = 0;
 
-  while (left <= right)
-  {
-    mid = (left + right) / 2;
+//   while (left <= right)
+//   {
+//     mid = (left + right) / 2;
 
-    if (OwnerUsernames[mid].first == x)
-    {
-      return OwnerUsernames[mid].second;
-    }
-    else if (OwnerUsernames[mid].first < x)
-      left = mid + 1;
-    else
-      right = mid - 1;
-  }
-  return -1;
-}
+//     if (OwnerUsernames[mid].first == x)
+//     {
+//       return OwnerUsernames[mid].second;
+//     }
+//     else if (OwnerUsernames[mid].first < x)
+//       left = mid + 1;
+//     else
+//       right = mid - 1;
+//   }
+//   return -1;
+// }
 
 //to show the full menu list saved in menu array
 void showMainMenu()
 {
-  if (ObjIndex == 0)
+  if (menuIndex == 0)
   {
     cout << "\tSorry there is no food on menu\n";
     return;
   }
   else
   {
-    for (int j = 0; j < ObjIndex; j++)
+    for (int j = 0; j < menuIndex; j++)
     {
       MainMenuArray[j].showMenu(j);
     }
@@ -204,10 +269,10 @@ void addNewFoodItem()
     fflush(stdin);
     cin >> tempObject.stockCount;
 
-    tempObject.foodcode = ObjIndex + 1;
+    tempObject.foodcode = menuIndex + 1;
     //foodcodesData.push_back({tempObject.foodcode, ObjIndex});
-    MainMenuArray[ObjIndex].setMenuInfo(tempObject);
-    ObjIndex++;
+    MainMenuArray[menuIndex].setMenuData(tempObject);
+    menuIndex++;
     cout << NL << "\tSuccessfully added in the menu";
     cout << NL;
   }
@@ -222,10 +287,10 @@ void UpdateExistingMenu()
   cin >> foodcode;
 
   int index = (foodcode - 1);
-  if (index < ObjIndex)
+  if (index < menuIndex)
   {
     cloneMenuData tempObject;
-    tempObject = MainMenuArray[index].getMenuInfo(tempObject);
+    tempObject = MainMenuArray[index].getMenuData(tempObject);
     cout << NL << "\tSelected food code      : " << tempObject.foodcode;
     cout << NL << "\tSelected food name      : " << tempObject.foodname;
     cout << NL << "\tSelected food price     : " << tempObject.price;
@@ -243,7 +308,7 @@ void UpdateExistingMenu()
       cout << NL << "\tEnter new food name: ";
       cin.ignore();
       getline(cin, tempObject.foodname);
-      MainMenuArray[index].setMenuInfo(tempObject);
+      MainMenuArray[index].setMenuData(tempObject);
     }
 
     //option for changing quantity in stock
@@ -251,7 +316,7 @@ void UpdateExistingMenu()
     {
       cout << NL << "\tEnter new food quantity in stock : ";
       cin >> tempObject.stockCount;
-      MainMenuArray[index].setMenuInfo(tempObject);
+      MainMenuArray[index].setMenuData(tempObject);
     }
 
     //option for changing food price
@@ -259,7 +324,7 @@ void UpdateExistingMenu()
     {
       cout << NL << "\tEnter new price for this food : ";
       cin >> tempObject.price;
-      MainMenuArray[index].setMenuInfo(tempObject);
+      MainMenuArray[index].setMenuData(tempObject);
     }
 
     //option for change entire food info
@@ -272,7 +337,7 @@ void UpdateExistingMenu()
       cin >> tempObject.stockCount;
       cout << NL << "\tEnter new price for this food : ";
       cin >> tempObject.price;
-      MainMenuArray[index].setMenuInfo(tempObject);
+      MainMenuArray[index].setMenuData(tempObject);
     }
     else if (option == 5)
       return;
@@ -335,9 +400,6 @@ void clearScreen()
   system("cls");
 }
 
-int OwnerLogin()
-{
-}
 //owner sections and options
 int OwnerAccess()
 {
@@ -347,11 +409,11 @@ int OwnerAccess()
     system("cls");
     cout << "\tWelcome Owner\n";
     cout << "\tpress following numbers\n";
-    cout << "\t1)View Menu item\n";
-    cout << "\t2)Add food to Menu\n";
-    cout << "\t3)Update Existing menu\n";
-    cout << "\t4)Go back to main menu\n";
-    cout << "\t5)Exit the app\n";
+    cout << "\t1) View Menu item\n";
+    cout << "\t2) Add food to Menu\n";
+    cout << "\t3) Update Existing menu\n";
+    cout << "\t4) Go back to main menu\n";
+    cout << "\t5) Exit the app\n";
     cout << "\tGive your option: ";
     cin >> select2;
     if (select2 == 1)
@@ -378,6 +440,111 @@ int OwnerAccess()
   }
 }
 
+int AdministrationLogin()
+{
+  int select, option;
+  string username, password;
+  while (1)
+  {
+    system("cls");
+    cout << "\tWelcome To Administration panel \n";
+    cout << "\t1) Login" << NL;
+    cout << "\t2) Register" << NL;
+    cout << "\t3) Go back to main menu\n";
+    cout << "\t4) Exit the app\n";
+    cout << "\n\tGive your option: ";
+
+    cin >> select;
+    if (select == 1)
+    {
+      system("cls");
+      cout << "\n\tLog in to your account" << NL;
+      cout << "\n\tEnter your username: ";
+      cin >> username;
+      if (verifyUser[username].first == "")
+      {
+        cout << "\n\tUsername doesn't exist, please register an account...\n";
+        clearScreen();
+        continue;
+      }
+      else
+      {
+        cout << "\tEnter your password: ";
+        cin >> password;
+      }
+      if (verifyUser[username].first == password)
+      {
+        userProfileIndex = verifyUser[username].second;
+        return 1;
+        //returning 1 for login success
+      }
+      else
+      {
+        cout << "\n\tSorry username and pasword didn't match\n";
+        clearScreen();
+        return 0;
+        //returning 0 for login failure
+      }
+    }
+    else if (select == 2)
+    {
+      system("cls");
+      cloneOwnerData tempObject;
+      cout << "\tRegister for Administration" << NL << NL;
+      cout << "\t(username must be unique without space)" << NL;
+      cout << "\tEnter your username: ";
+      cin >> tempObject.username;
+      if (verifyUser[tempObject.username].first != "")
+      {
+        cout << "Sorry this user name already exist....";
+        clearScreen();
+        continue;
+      }
+      cout << "\n\tEnter your password: ";
+      cin >> tempObject.password;
+      cout << "\n\tEnter your mobile number: ";
+      cin >> tempObject.mobileNum;
+
+      if (ownerExist == true)
+      {
+        cout << "\n\tYou're registered as partner...\n\n";
+        tempObject.isOwner = false;
+      }
+      else
+      {
+        cout << "\n\tChoose your poosition [1]Owner\\[2]Partner";
+        cout << "\n\tNote: Only a single user can be owner\n";
+        cout << "\n\tGive your option: ";
+        int position;
+        cin >> position;
+        if (position == 1)
+        {
+          cout << "\n\tYou're registered as owner...\n\n";
+          ownerExist = true;
+          tempObject.isOwner = true;
+        }
+        else
+        {
+          cout << "\n\tYou're registered as partner...\n\n";
+          tempObject.isOwner = false;
+        }
+      }
+      OwnerInfoArray[ownerIndex].setOwnerData(tempObject);
+
+      verifyUser[tempObject.username] = {tempObject.password, ownerIndex};
+
+      userProfileIndex = ownerIndex;
+      ownerIndex++;
+      clearScreen();
+    }
+
+    else if (select == 3)
+      return 3; //returning 3 for going back to main menu
+    else
+      return 4; //return 4 to exit the app
+  }
+}
+
 //Customer section and options
 int CustomerAccess()
 {
@@ -387,9 +554,9 @@ int CustomerAccess()
     system("cls");
     cout << "\tWelcome Customer\n";
     cout << "\tpress following numbers\n";
-    cout << "\t1)View Menu item and order\n";
-    cout << "\t2)Go back to main menu\n";
-    cout << "\t3)Exit the app\n";
+    cout << "\t1) View Menu item and order\n";
+    cout << "\t2) Go back to main menu\n";
+    cout << "\t3) Exit the app\n";
     cout << "\n\tYour total bill untill now: " << customer_total_cost << " Taka." << NL;
     cout << "\n\tGive your option: ";
     cin >> select2;
@@ -420,30 +587,44 @@ int main()
 {
 
   //saving data from database
-  readDataFromDatabase();
+  readMenuDataFromFile();
+  readOwnerInfoFile();
 
   //startup first page of program from here..
   int select, ex = -1;
+  bool isLoginPageUsed = false;
   while (1)
   {
     system("cls");
     cout << "\tWelcome to Food menu app:\n";
-    cout << "\tSelect the option below:\n";
-    cout << "\t1) Press 1 to log in as an Owner\n";
-    cout << "\t2) Press 2 to Access as a Customer\n";
-    cout << "\t3) Press 3 to exit the app\n";
+    cout << "\n\tSelect the option below:\n";
+    cout << "\t1) Access into Administration\n";
+    cout << "\t2) Access as a Customer\n";
+    cout << "\t3) Exit the app\n";
     cout << "\tGive your option: ";
     cin >> select;
+
+    //accessing as administration
     if (select == 1)
     {
-      //accessing as owner
-      ex = OwnerAccess();
-      if (ex == 1)
+      //checking if already logged in ot not
+      isLoginPageUsed ? ex = 1 : ex = AdministrationLogin();
+      if (ex == 4) //exiting the app from login page
         break;
+      if (ex == 1) //if login successful
+      {
+        isLoginPageUsed = true;
+        int ownerAccessValue;
+        ownerAccessValue = OwnerAccess();
+        if (ownerAccessValue == 1)
+          break; //exiting the app from owner page
+      }
     }
+
+    //accessing as customer
     else if (select == 2)
     {
-      //accessing as customer
+
       ex = CustomerAccess();
       if (ex == 1)
         break;
@@ -453,6 +634,7 @@ int main()
   }
 
   //saving all the array data to file before closing
-  saveMenuInDatabase();
+  saveMenuInFile();
+  saveOwnerInfoInFile();
   return 0;
 }
