@@ -48,7 +48,7 @@ public:
     return temp;
   }
 
-  void showMenu(int j)
+  void showMenu()
   {
     cout << NL << "\t|```````````````````````````" << NL;
     //cout << "\t| Serial: " << j + 1 << NL;
@@ -66,7 +66,7 @@ struct cloneOwnerData
   bool isOwner = false;
 };
 
-class Owner : public FoodMenu
+class Owner
 {
 private:
   string username, mobileNum, password;
@@ -198,6 +198,9 @@ void saveMenuInFile()
 //to show the full menu list saved in menu array
 void showMainMenu()
 {
+  system("cls");
+  cout << "\n=============== Menu Items List ===============\n\n";
+
   if (menuIndex == 0)
   {
     cout << "\tSorry there is no food on menu\n";
@@ -207,14 +210,17 @@ void showMainMenu()
   {
     for (int j = 0; j < menuIndex; j++)
     {
-      mainMenuArray[j].showMenu(j);
+      mainMenuArray[j].showMenu();
     }
   }
+  return;
 }
 
 //for adding new item to menu, only accessible by the owner
 void addNewFoodItem()
 {
+  system("cls");
+  cout << "\n=============== Add new food Item ===============\n\n";
   int n;
   cout << NL << "\tEnter number of new food items: ";
   cin >> n;
@@ -246,6 +252,8 @@ void addNewFoodItem()
 //updating a single food data, only accssible by the owner
 void UpdateExistingMenu()
 {
+  system("cls");
+  cout << "\n=============== Update Menu Items ===============\n\n";
   cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
   int foodcode, option;
   cin >> foodcode;
@@ -319,41 +327,46 @@ void UpdateExistingMenu()
 //ordering food from the menu stock, accessible by the customer
 void selectFoodForOrder()
 {
-  // cout << NL << "\tEnter Food Code : ";
-  // int foodcode, amount;
-  // cin >> foodcode;
-  // int index = binarySearchByFoodCode(foodcode);
-  // if (index != -1)
-  // {
-  //   cout << NL << "\tEnter Food Amount : ";
-  //   cin >> amount;
-  //   if (amount > menu[index].count)
-  //   {
-  //     cout << NL << "\tSorry You selected more than maximum food in the stock" << NL;
-  //   }
-  //   else
-  //   {
-  //     cout << NL << "\tSelected Food Code : " << menu[index].foodcode;
-  //     cout << NL << "\tSelected Food name : " << menu[index].foodname;
-  //     cout << NL << "\tSelected Food price : " << menu[index].price;
-  //     cout << NL << "\tFood Amount : " << amount;
-  //     menu[index].count -= amount;
-  //     int sum = menu[index].price * amount;
-  //     customer_total_cost += sum;
-  //     cout << NL << "\tYou have ordered " << sum << " Taka food in this session";
-  //     cout << NL << "\tYour total bill is : " << customer_total_cost << " Taka" << NL << NL;
-
-  //     cout << NL << "\tpress 1 to order again, any other number to return to cutomer menu: ";
-  //     int option;
-  //     cin >> option;
-  //     if (option == 1)
-  //       selectFoodForOrder();
-  //     else
-  //       return;
-  //   }
-  // }
-  // else
-  //   cout << "\tInvalid Food code" << NL;
+  cout << NL << "\tEnter Food Code : ";
+  int foodcode, amount;
+  cin >> foodcode;
+  int index = (foodcode - 1);
+  if (index < menuIndex)
+  {
+    cloneMenuData tempObject;
+    tempObject = mainMenuArray[index].getMenuData(tempObject);
+     system("cls");
+    cout<<"\n\tSelected Item: \n";
+    mainMenuArray[index].showMenu();
+    cout << NL << "\tEnter Food Amount : ";
+    cin >> amount;
+    if (amount > tempObject.stockCount)
+    {
+      cout << NL << "\tSorry You selected more than maximum food in the stock" << NL;
+    }
+    else
+    {
+      cout << NL << "\tSelected Food Code : " << tempObject.foodcode;
+      cout << NL << "\tSelected Food name : " << tempObject.foodname;
+      cout << NL << "\tSelected Food price : " << tempObject.price;
+      cout << NL << "\tFood Amount : " << amount;
+      tempObject.stockCount -= amount;
+      int sum = tempObject.price * amount;
+      customer_total_cost += sum;
+      cout << NL << "\tYou have ordered " << sum << " Taka food in this session";
+      cout << NL << "\tYour total bill is : " << customer_total_cost << " Taka" << NL << NL;
+      mainMenuArray[index].setMenuData(tempObject);
+      cout << NL << "\tpress 1 to order again, any other number to return to cutomer menu: ";
+      int option;
+      cin >> option;
+      if (option == 1)
+        selectFoodForOrder();
+      else
+        return;
+    }
+  }
+  else
+    cout << "\tInvalid Food code" << NL;
 }
 
 void clearScreen()
@@ -367,7 +380,6 @@ void clearScreen()
 //partner section and options
 int partnerAccess()
 {
-  //<\code>
   int select;
   int select2;
   while (1)
@@ -464,7 +476,8 @@ int AdministrationLogin()
     if (select == 1)
     {
       system("cls");
-      cout << "\n=============== Login to your account ===============\n\n" << NL;
+      cout << "\n=============== Login to your account ===============\n\n"
+           << NL;
       cout << "\n\tEnter your username: ";
       cin >> username;
       if (verifyUser[username].first == "")
@@ -497,7 +510,8 @@ int AdministrationLogin()
     {
       system("cls");
       cloneOwnerData tempObject;
-      cout << "\n=============== Ragister for administration ===============\n\n" << NL << NL;
+      cout << "\n=============== Ragister for administration ===============\n\n"
+           << NL << NL;
       cout << "\t(username must be unique without space)" << NL;
       cout << "\tEnter your username: ";
       cin >> tempObject.username;

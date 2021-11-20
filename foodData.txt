@@ -1,7 +1,7 @@
 1
 shingara extraa
 10
-12
+0
 2
 glue
 12
@@ -33,4 +33,8 @@ shushi
 9
 ice cream
 123
+12
+10
+kola vortha
+12
 12
