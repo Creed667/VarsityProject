@@ -243,7 +243,7 @@ void clearScreen()
 }
 
 //owner sections and options
-int OwnerAccess()
+int ownerAccess()
 {
   int select2;
   while (1)
@@ -341,7 +341,7 @@ int main()
     if (select == 1)
     {
       //accessing as owner
-      ex = OwnerAccess();
+      ex = ownerAccess();
       if (ex == 1)
         break;
     }
