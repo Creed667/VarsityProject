@@ -49,7 +49,7 @@ public:
     return temp;
   }
 
-  void showMenu()
+  void showItem()
   {
     cout << NL << "\t|```````````````````````````" << NL;
     cout << "\t| Item code : " << foodcode << NL;
@@ -77,6 +77,14 @@ public:
   {
     return isOwner;
   }
+  bool matchPassword(string pass)
+  {
+    if (this->password == pass)
+      return true;
+    else
+      return false;
+  }
+
   void setOwnerData(cloneOwnerData temp)
   {
     this->username = temp.username;
@@ -204,7 +212,7 @@ void saveMenuInFile()
 // ------------------------> Functions for Food Menu interface <------------------------
 
 //to show the full menu list saved in menu array
-void showMainMenu()
+void showMenuItems()
 {
   system("cls");
   cout << "\n=============== Menu Items List ===============\n\n";
@@ -218,7 +226,7 @@ void showMainMenu()
   {
     for (int j = 0; j < menuIndex; j++)
     {
-      mainMenuArray[j].showMenu();
+      mainMenuArray[j].showItem();
     }
   }
   return;
@@ -254,78 +262,82 @@ void addNewFoodItem()
 }
 
 //updating a single food data, only accssible by the owner
-void UpdateExistingMenu()
+void updateMenuItemInfo()
 {
-  system("cls");
-  cout << "\n=============== Update Menu Items ===============\n\n";
-  cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
-  int foodcode, option;
-  cin >> foodcode;
-
-  int index = (foodcode - 1);
-  if (index < menuIndex)
+  while (1)
   {
-    cloneMenuData tempObject;
-    tempObject = mainMenuArray[index].getMenuData(tempObject);
-    cout << NL << "\tSelected food code      : " << tempObject.foodcode;
-    cout << NL << "\tSelected food name      : " << tempObject.foodname;
-    cout << NL << "\tSelected food price     : " << tempObject.price;
-    cout << NL << "\tSelected food quantity in stock : " << tempObject.stockCount << NL << NL;
-    cout << "\t1) Edit food name" << NL;
-    cout << "\t2) Edit Quantity of the food" << NL;
-    cout << "\t3) Edit price of the food" << NL;
-    cout << "\t4) Edit the all the info of this food" << NL;
-    cout << "\t5) cancel operation" << NL;
-    cout << "\tselect your option: ";
-    cin >> option;
-    //option for changing name only
-    if (option == 1)
-    {
-      cout << NL << "\tEnter new food name: ";
-      cin.ignore();
-      getline(cin, tempObject.foodname);
-      mainMenuArray[index].setMenuData(tempObject);
-    }
+    system("cls");
+    cout << "\n=============== Update Menu Items ===============\n\n";
+    cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
+    int foodcode, option;
+    cin >> foodcode;
 
-    //option for changing quantity in stock
-    else if (option == 2)
+    int index = (foodcode - 1);
+    if (index < menuIndex)
     {
-      cout << NL << "\tEnter new food quantity in stock : ";
-      cin >> tempObject.stockCount;
-      mainMenuArray[index].setMenuData(tempObject);
-    }
+      cloneMenuData tempObject;
+      tempObject = mainMenuArray[index].getMenuData(tempObject);
+      // cout << NL << "\tSelected food code      : " << tempObject.foodcode;
+      // cout << NL << "\tSelected food name      : " << tempObject.foodname;
+      // cout << NL << "\tSelected food price     : " << tempObject.price;
+      // cout << NL << "\tSelected food quantity in stock : " << tempObject.stockCount << NL << NL;
+      cout << "\n\tSelected Item \n";
+      mainMenuArray[index].showItem();
+      cout << "\t1) Edit food name" << NL;
+      cout << "\t2) Edit Quantity of the food" << NL;
+      cout << "\t3) Edit price of the food" << NL;
+      cout << "\t4) Edit the all the info of this food" << NL;
+      cout << "\t5) cancel operation" << NL;
+      cout << "\tselect your option: ";
+      cin >> option;
+      //option for changing name only
+      if (option == 1)
+      {
+        cout << NL << "\tEnter new food name: ";
+        cin.ignore();
+        getline(cin, tempObject.foodname);
+        mainMenuArray[index].setMenuData(tempObject);
+      }
 
-    //option for changing food price
-    else if (option == 3)
-    {
-      cout << NL << "\tEnter new price for this food : ";
-      cin >> tempObject.price;
-      mainMenuArray[index].setMenuData(tempObject);
-    }
+      //option for changing quantity in stock
+      else if (option == 2)
+      {
+        cout << NL << "\tEnter new food quantity in stock : ";
+        cin >> tempObject.stockCount;
+        mainMenuArray[index].setMenuData(tempObject);
+      }
 
-    //option for change entire food info
-    else if (option == 4)
-    {
-      cout << NL << "\tEnter new food name: ";
-      cin.ignore();
-      getline(cin, tempObject.foodname);
-      cout << NL << "\tEnter new food quantity in stock : ";
-      cin >> tempObject.stockCount;
-      cout << NL << "\tEnter new price for this food : ";
-      cin >> tempObject.price;
-      mainMenuArray[index].setMenuData(tempObject);
+      //option for changing food price
+      else if (option == 3)
+      {
+        cout << NL << "\tEnter new price for this food : ";
+        cin >> tempObject.price;
+        mainMenuArray[index].setMenuData(tempObject);
+      }
+
+      //option for change entire food info
+      else if (option == 4)
+      {
+        cout << NL << "\tEnter new food name: ";
+        cin.ignore();
+        getline(cin, tempObject.foodname);
+        cout << NL << "\tEnter new food quantity in stock : ";
+        cin >> tempObject.stockCount;
+        cout << NL << "\tEnter new price for this food : ";
+        cin >> tempObject.price;
+        mainMenuArray[index].setMenuData(tempObject);
+      }
+      else
+        return;
     }
-    else if (option == 5)
+    // if food code doesn't exist
+    else
+    {
+      cout << NL << "\tNo such food code of food item exist in the menu" << NL;
       return;
+    }
+    cout << NL << NL << "\tSuccessfully Updated" << NL;
   }
-
-  // if food code doesn't exist
-  else
-  {
-    cout << NL << "\tNo such food code of food item exist in the menu" << NL;
-    return;
-  }
-  cout << NL << NL << "\tSuccessfully Updated" << NL;
 }
 
 //ordering food from the menu stock, accessible by the customer
@@ -341,7 +353,7 @@ void selectFoodForOrder()
     tempObject = mainMenuArray[index].getMenuData(tempObject);
     system("cls");
     cout << "\n\tSelected Item: \n";
-    mainMenuArray[index].showMenu();
+    mainMenuArray[index].showItem();
     cout << NL << "\tEnter Food Amount : ";
     cin >> amount;
     if (amount > tempObject.stockCount)
@@ -382,12 +394,68 @@ void selectFoodForOrder()
     cout << "\tInvalid Food code" << NL;
 }
 
+void deleteSingleItem()
+{
+  system("cls");
+  cout << "\n=============== Action center ===============\n\n";
+  int foodcode, option;
+  showMenuItems();
+  cout << "\n\t1) Remove an item";
+  cout << "\n\t2) Cancel operation";
+  cout << "\n\tGive your option: ";
+  cin >> option;
+  if (option == 1)
+  {
+    cout << "\n\tEnter foodcode for deleting food item : ";
+    cin >> foodcode;
+    foodcode--;
+    cloneMenuData tempObject;
+    tempObject = mainMenuArray[foodcode].getMenuData(tempObject);
+    cout << "\n\tConfirm removing " << tempObject.foodname << " from the menu? [y/n]: ";
+    char confirm;
+    cin >> confirm;
+    if (confirm == 'n' || confirm != 'y')
+    {
+      cout << "\n\tOperation canceled...\n";
+      return;
+    }
+    menuIndex--;
+    for (int i = foodcode; i < menuIndex; i++)
+    {
+      tempObject = mainMenuArray[i + 1].getMenuData(tempObject);
+      mainMenuArray[i].setMenuData(tempObject);
+    }
+    cout << "\n\tItem has been removed from the menu\n";
+    return;
+  }
+  else
+  {
+    cout << NL;
+    return;
+  }
+}
+
+void deleteFullMenu()
+{
+  cout << "\n\tConfirm Deleting Full menu? [y/n]: ";
+  char confirm;
+  cin >> confirm;
+  if (confirm == 'n' || confirm != 'y')
+  {
+    cout << "\n\tOperation canceled...\n";
+    return;
+  }
+  menuIndex = 0;
+  cout << "\n\tMenu has been deleted successfully\n";
+  return;
+}
+
 //-------------------------------------> End of Food Menu interface<-------------------------------------------
 
 //----------------------> User Profile & Customer interface functions <--------------------------
 void clearScreen()
 {
-  cout << "\tpress enter to continue...";
+  cout << "\n\tpress enter to continue...";
   getchar();
   getchar();
   system("cls");
@@ -501,14 +569,117 @@ int AdministrationLogin()
   }
 }
 
+//For editing user profile
+void EditProfile()
+{
+  while (1)
+  {
+    system("cls");
+    cout << "\n=============== Edit Profile ===============\n\n";
+    cloneOwnerData tempObject;
+    int option;
+    tempObject = ownerInfoArray[userProfileIndex].getOwnerData(tempObject);
+    ownerInfoArray[userProfileIndex].showOwnerData();
+    string oldUserName, oldPassword;
+    oldUserName = tempObject.username;
+    cout << "\n\t1) Edit your usename";
+    cout << "\n\t2) Edit password";
+    cout << "\n\t3) Edit mobile number";
+    cout << "\n\t4) Edit all info";
+    cout << "\n\t5) Cancel editing";
+    cout << "\n\tGive your option: ";
+
+    cin >> option;
+    if (option == 1)
+    {
+      cout << "\n\t(username must be unique without space)" << NL;
+      cout << "\tEnter your new username: ";
+      cin >> tempObject.username;
+      if (verifyUser[tempObject.username].first != "")
+      {
+        cout << "\n\tSorry this user name already exist....\n\n";
+        clearScreen();
+        return;
+      }
+    }
+    else if (option == 2)
+    {
+
+      cout << "\n\tEnter your old password: ";
+      cin >> oldPassword;
+      if (ownerInfoArray[userProfileIndex].matchPassword(oldPassword))
+      {
+        cout << "\n\tEnter new password: ";
+        cin >> tempObject.password;
+      }
+      else
+      {
+        cout << "\n\tPassword didn't match..";
+        clearScreen();
+        continue;
+      }
+    }
+    else if (option == 3)
+    {
+      cout << "\n\tEnter new phone number: ";
+      cin >> tempObject.mobileNum;
+    }
+    else if (option == 4)
+    {
+      cout << "\n\t(username must be unique without space)" << NL;
+      cout << "\tEnter your new username: ";
+      cin >> tempObject.username;
+      if (verifyUser[tempObject.username].first != "")
+      {
+        cout << "\n\tSorry this user name already exist....\n\n";
+        clearScreen();
+        return;
+      }
+
+      cout << "\n\tEnter your old password: ";
+      cin >> oldPassword;
+      if (ownerInfoArray[userProfileIndex].matchPassword(oldPassword))
+      {
+        cout << "\n\tEnter new password: ";
+        cin >> tempObject.password;
+      }
+      else
+      {
+        cout << "\n\tPassword didn't match..";
+        clearScreen();
+        continue;
+      }
+      cout << "\n\tEnter new phone number: ";
+      cin >> tempObject.mobileNum;
+    }
+
+    ownerInfoArray[userProfileIndex].setOwnerData(tempObject);
+    verifyUser.erase(oldUserName);
+    verifyUser[tempObject.username] = {tempObject.password, userProfileIndex};
+    cout << "\n\n\tYour Profile has been updated successfully...";
+    clearScreen();
+    return;
+  }
+}
+
 // showing user profile
 void showUserProfile()
 {
-  int option;
-  system("cls");
-  cout << "\n=============== User Profile ===============\n\n";
-  ownerInfoArray[userProfileIndex].showOwnerData();
-  cout << NL;
+  while (1)
+  {
+    int option;
+    system("cls");
+    cout << "\n=============== User Profile ===============\n\n";
+    ownerInfoArray[userProfileIndex].showOwnerData();
+    cout << "\n\t1)Edit profile";
+    cout << "\n\t2)Go back";
+    cout << "\n\tGive your option: ";
+    cin >> option;
+    if (option == 1)
+      EditProfile();
+    else
+      return;
+  }
 }
 
 // stuff/partner list only accessible by Owner
@@ -549,20 +720,20 @@ void removeUser()
     cin >> confirm;
     if (confirm == 'n' || confirm != 'y')
     {
-      cout<<"\n\tOperation canceled...\n\n";
+      cout << "\n\tOperation canceled...\n\n";
       return;
     }
     ownerIndex--;
-    for(int i=serial;i<ownerIndex;i++)
+    for (int i = serial; i < ownerIndex; i++)
     {
-      tempObject = ownerInfoArray[i+1].getOwnerData(tempObject);
+      tempObject = ownerInfoArray[i + 1].getOwnerData(tempObject);
       ownerInfoArray[i].setOwnerData(tempObject);
     }
-    cout<<"\n\tUser has been successfully removed..\n\n";
+    cout << "\n\tUser has been successfully removed..\n\n";
   }
-  else 
+  else
   {
-    cout<<NL;
+    cout << NL;
     return;
   }
 }
@@ -592,7 +763,7 @@ int partnerAccess()
     }
     else if (select2 == 2)
     {
-      showMainMenu();
+      showMenuItems();
       clearScreen();
     }
     else if (select2 == 3)
@@ -602,7 +773,7 @@ int partnerAccess()
     }
     else if (select2 == 4)
     {
-      UpdateExistingMenu();
+      updateMenuItemInfo();
       clearScreen();
     }
     else if (select2 == 5)
@@ -623,14 +794,16 @@ int ownerAccess()
     system("cls");
     cout << "\n=============== Welcome to Owner Section ===============\n\n";
     cout << "\tpress following numbers\n";
-    cout << "\t1) View My Profile\n";
-    cout << "\t2) View Owner & Partner List\n";
-    cout << "\t3) Remove User\n";
-    cout << "\t4) View Menu item\n";
+    cout << "\t1) View my profile\n";
+    cout << "\t2) View owner & partner List\n";
+    cout << "\t3) Remove user\n";
+    cout << "\t4) View menu item\n";
     cout << "\t5) Add food to Menu\n";
-    cout << "\t6) Update Existing menu\n";
-    cout << "\t7) Go back to main menu\n";
-    cout << "\t8) Exit the app\n";
+    cout << "\t6) Update food menu\n";
+    cout << "\t7) Delete an Item from the menu\n";
+    cout << "\t8) Delete full menu\n";
+    cout << "\t9) Go back to main menu\n";
+    cout << "\t10) Exit the app\n";
     cout << "\tGive your option: ";
     cin >> select2;
 
@@ -645,14 +818,14 @@ int ownerAccess()
       showUserList();
       clearScreen();
     }
-    else if(select2 == 3)
+    else if (select2 == 3)
     {
       removeUser();
       clearScreen();
     }
     else if (select2 == 4)
     {
-      showMainMenu();
+      showMenuItems();
       clearScreen();
     }
     else if (select2 == 5)
@@ -662,14 +835,24 @@ int ownerAccess()
     }
     else if (select2 == 6)
     {
-      UpdateExistingMenu();
+      updateMenuItemInfo();
       clearScreen();
     }
     else if (select2 == 7)
     {
-      return 0;
+      deleteSingleItem();
+      clearScreen();
     }
     else if (select2 == 8)
+    {
+      deleteFullMenu();
+      clearScreen();
+    }
+    else if (select2 == 9)
+    {
+      return 0;
+    }
+    else if (select2 == 10)
       return 1;
   }
 }
@@ -680,6 +863,7 @@ int CustomerAccess()
   int select2, option;
   while (1)
   {
+
     system("cls");
     cout << "\n=============== Welcome to Customer section ===============\n\n";
     cout << "\tpress following numbers\n";
@@ -691,7 +875,7 @@ int CustomerAccess()
     cin >> select2;
     if (select2 == 1)
     {
-      showMainMenu();
+      showMenuItems();
       cout << "\tEnter 1 to order and  2 to return to Customer menu\n";
       cout << "\tEnter your option: ";
       cin >> option;
@@ -716,6 +900,7 @@ int CustomerAccess()
 // ----------------------------> Starting of the App <---------------------------
 int main()
 {
+  system("color 0B");
 
   //saving data from database
   readMenuDataFromFile();

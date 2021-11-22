@@ -135,7 +135,7 @@ void addNewFoodItem()
 }
 
 //updating a single food data, only accssible by the owner
-void UpdateExistingMenu()
+void updateMenuItemInfo()
 {
   cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
   int foodcode, option;
@@ -270,7 +270,7 @@ int ownerAccess()
     }
     else if (select2 == 3)
     {
-      UpdateExistingMenu();
+      updateMenuItemInfo();
       clearScreen();
     }
     else if (select2 == 4)

@@ -111,7 +111,7 @@ void addNewFoodItem()
   return;
 }
 
-void UpdateExistingMenu()
+void updateMenuItemInfo()
 {
   cout << NL << "\tFor showing specific Menu and edit Menu Enter Food Code : ";
   int foodcode, option, flag = 0;
@@ -233,7 +233,7 @@ int ownerAccess()
     }
     else if (select2 == 3)
     {
-      UpdateExistingMenu();
+      updateMenuItemInfo();
       cout << "\tpress enter to continue...";
       getchar();
       getchar();
